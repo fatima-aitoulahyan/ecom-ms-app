@@ -3,6 +3,7 @@ package com.example.billingservice.web;
 import com.example.billingservice.entities.Bill;
 import com.example.billingservice.feign.CustomerServiceRestCient;
 import com.example.billingservice.feign.InventoryServiceRestClient;
+import com.example.billingservice.model.Product;
 import com.example.billingservice.repository.BillRespository;
 import com.example.billingservice.repository.ProductItemRepository;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,9 @@ public class BillRestController {
     {
         Bill bill = billRespository.findById(id).orElse(null);
         bill.setCustomer(customerServiceRestCient.findCustomerById(bill.getCustomerId()));
+        bill.getProductItems().forEach(productItem -> {
+            productItem.setProduct(inventoryServiceRestClient.getProduct(productItem.getProductId()));
+        });
         return bill;
     }
 }
